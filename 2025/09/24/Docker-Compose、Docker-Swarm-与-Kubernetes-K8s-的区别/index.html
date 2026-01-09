@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Docker Compose、Docker Swarm 与 Kubernetes (K8s) 的区别 | Hi</title><meta name="author" content="South"><meta name="copyright" content="South"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Docker Swarm、Docker Compose 和 Kubernetes 是容器编排领域三个关键的工具，它们定位不同，适用于不同的场景。 简单比喻：  Docker Compose：像是一个音响系统的遥控器。可以在一个房间（一台机器）里，一键控制多个音响设备（多个容器）的开关、音量，让它们协同工作。管理单机。 Docker Swarm：像是一个大型商场的中央广播系统。有一个控制中心，可以同">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker Compose、Docker Swarm 与 Kubernetes (K8s) 的区别">
+<meta property="og:url" content="https://xiangnan321.github.io/2025/09/24/Docker-Compose%E3%80%81Docker-Swarm-%E4%B8%8E-Kubernetes-K8s-%E7%9A%84%E5%8C%BA%E5%88%AB/index.html">
+<meta property="og:site_name" content="Hi">
+<meta property="og:description" content="Docker Swarm、Docker Compose 和 Kubernetes 是容器编排领域三个关键的工具，它们定位不同，适用于不同的场景。 简单比喻：  Docker Compose：像是一个音响系统的遥控器。可以在一个房间（一台机器）里，一键控制多个音响设备（多个容器）的开关、音量，让它们协同工作。管理单机。 Docker Swarm：像是一个大型商场的中央广播系统。有一个控制中心，可以同">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xiangnan321.github.io/image/avatar.png">
+<meta property="article:published_time" content="2025-09-24T07:05:21.000Z">
+<meta property="article:modified_time" content="2025-09-24T07:09:17.677Z">
+<meta property="article:author" content="South">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xiangnan321.github.io/image/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Docker Compose、Docker Swarm 与 Kubernetes (K8s) 的区别",
+  "url": "https://xiangnan321.github.io/2025/09/24/Docker-Compose%E3%80%81Docker-Swarm-%E4%B8%8E-Kubernetes-K8s-%E7%9A%84%E5%8C%BA%E5%88%AB/",
+  "image": "https://xiangnan321.github.io/image/avatar.png",
+  "datePublished": "2025-09-24T07:05:21.000Z",
+  "dateModified": "2025-09-24T07:09:17.677Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "South",
+      "url": "https://xiangnan321.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/logo.png"><link rel="canonical" href="https://xiangnan321.github.io/2025/09/24/Docker-Compose%E3%80%81Docker-Swarm-%E4%B8%8E-Kubernetes-K8s-%E7%9A%84%E5%8C%BA%E5%88%AB/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: South","link":"链接: ","source":"来源: Hi","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'medium_zoom',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Docker Compose、Docker Swarm 与 Kubernetes (K8s) 的区别',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/styles.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/logo.png" alt="Logo"><span class="site-name">Hi</span></a><a class="nav-page-title" href="/"><span class="site-name">Docker Compose、Docker Swarm 与 Kubernetes (K8s) 的区别</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Docker Compose、Docker Swarm 与 Kubernetes (K8s) 的区别</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-09-24T07:05:21.000Z" title="发表于 2025-09-24 15:05:21">2025-09-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-09-24T07:09:17.677Z" title="更新于 2025-09-24 15:09:17">2025-09-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BF%90%E7%BB%B4/">运维</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>Docker Swarm、Docker Compose 和 Kubernetes 是容器编排领域三个关键的工具，它们定位不同，适用于不同的场景。</p>
+<p>简单比喻：</p>
+<ul>
+<li><strong>Docker Compose</strong>：像是一个<strong>音响系统的遥控器</strong>。可以在一个房间（一台机器）里，一键控制多个音响设备（多个容器）的开关、音量，让它们协同工作。<strong>管理单机。</strong></li>
+<li><strong>Docker Swarm</strong>：像是一个<strong>大型商场的中央广播系统</strong>。有一个控制中心，可以同时向商场里的所有分区（多台机器）发布指令，让整个商场的背景音乐同步。<strong>内置的、简单的集群管理。</strong></li>
+<li><strong>Kubernetes (K8s)</strong>：像是<strong>整个城市的交通指挥中心</strong>。它管理着成千上万辆汽车（容器），自动处理交通拥堵（负载均衡）、车辆故障（自愈）、新建道路（自动扩缩容），确保城市交通高效、可靠。<strong>企业级的、复杂的集群管理。</strong></li>
+</ul>
+<h2 id="Docker-Compose-编排工具（单机）"><a href="#Docker-Compose-编排工具（单机）" class="headerlink" title="Docker Compose - 编排工具（单机）"></a>Docker Compose - 编排工具（单机）</h2><p><strong>核心定位：定义和运行多个容器的单机应用。</strong></p>
+<ul>
+<li><strong>工作范围</strong>：<strong>单台主机</strong>。它无法管理多台机器组成的集群。</li>
+<li><strong>主要功能</strong>：通过一个 <code>docker-compose.yml</code> 文件，定义一组相关联的服务（容器）、它们的依赖关系、网络、数据卷等。然后用一条命令 <code>docker compose up</code> 启动整个应用栈。</li>
+<li><strong>设计初衷</strong>：主要用于<strong>开发、测试和单机部署场景</strong>。它极大地简化了在本地搭建复杂多服务环境（如Web服务器+数据库+缓存）的流程。</li>
+<li><strong>关键特性</strong>：<ul>
+<li><strong>声明式配置</strong>：用YAML文件描述应用架构。</li>
+<li><strong>服务发现</strong>：在自定义网络中，容器可以通过服务名互相访问。</li>
+<li><strong>简单的生命周期管理</strong>：<code>up</code>, <code>down</code>, <code>start</code>, <code>stop</code> 等。</li>
+</ul>
+</li>
+</ul>
+<p><strong>简述：Compose 是用于把多个容器“组合”成一个完整应用的“胶水”，但它只在一台机器上起作用。</strong></p>
+<h2 id="Docker-Swarm-集群编排工具（内置-轻量）"><a href="#Docker-Swarm-集群编排工具（内置-轻量）" class="headerlink" title="Docker Swarm - 集群编排工具（内置&amp;轻量）"></a>Docker Swarm - 集群编排工具（内置&amp;轻量）</h2><p><strong>核心定位：将一组Docker主机转变为一个单一的、虚拟的Docker引擎。</strong></p>
+<ul>
+<li><strong>工作范围</strong>：<strong>多台主机组成的集群</strong>。</li>
+<li><strong>与Docker的关系</strong>：Swarm 模式是 <strong>Docker 引擎内置</strong>的功能，无需安装额外组件。只需要初始化 Swarm 并将其他节点加入即可。</li>
+<li><strong>主要功能</strong>：允许部署和管理一个分布式应用 across 多台机器。它负责容器的调度、服务发现、负载均衡、扩缩容和滚动更新。</li>
+<li><strong>设计初衷</strong>：为那些已经熟悉 Docker 的团队提供一个<strong>简单、易上手</strong>的集群解决方案。它的学习曲线相对平缓。</li>
+<li><strong>关键特性</strong>：<ul>
+<li><strong>内置集成</strong>：使用标准的 Docker API 和 CLI 命令（如 <code>docker service create</code>）。</li>
+<li><strong>声明式服务模型</strong>：类似 Compose，但用 <code>docker stack deploy</code> 来部署一个 Compose 文件到集群。</li>
+<li><strong>简单的服务发现和负载均衡</strong>：内置。</li>
+<li><strong>安全性</strong>：节点间的通信默认加密。</li>
+</ul>
+</li>
+</ul>
+<p><strong>简述：Swarm 是 Docker 自带的“集群模式”，用类似管理单机的方式去管理一个容器集群，非常简单易用。</strong></p>
+<h2 id="Kubernetes-K8s-容器编排平台（企业级）"><a href="#Kubernetes-K8s-容器编排平台（企业级）" class="headerlink" title="Kubernetes (K8s) - 容器编排平台（企业级）"></a>Kubernetes (K8s) - 容器编排平台（企业级）</h2><p><strong>核心定位：生产级的容器编排系统，提供高度的自动化、可扩展性和可靠性。</strong></p>
+<ul>
+<li><strong>工作范围</strong>：<strong>大规模、跨数据中心的集群</strong>。</li>
+<li><strong>与Docker的关系</strong>：<strong>独立的、更复杂的平台</strong>。虽然它最初支持 Docker 作为容器运行时，但现在它已抽象为支持多种运行时（如 containerd, CRI-O）。K8s 不限于 Docker。</li>
+<li><strong>主要功能</strong>：提供了极其丰富的功能集，包括：<ul>
+<li><strong>自动装箱</strong>：智能地将容器调度到合适的节点上。</li>
+<li><strong>自我修复</strong>：自动重启失败的容器、替换容器、杀死不健康的容器。</li>
+<li><strong>自动扩缩容</strong>：根据 CPU 使用率或自定义指标自动调整应用实例数量。</li>
+<li><strong>服务发现与负载均衡</strong>：功能强大，但配置相对复杂。</li>
+<li><strong>滚动更新和回滚</strong>：精细控制发布流程，可一键回滚。</li>
+<li><strong>密钥和配置管理</strong>：独立的 <code>Secret</code> 和 <code>ConfigMap</code> 对象来管理敏感信息和配置。</li>
+<li><strong>存储编排</strong>：自动挂载本地、云存储等。</li>
+</ul>
+</li>
+<li><strong>设计初衷</strong>：从谷歌内部大规模容器管理经验（Borg系统）诞生，旨在解决<strong>大规模、生产级</strong>应用的容器编排问题。</li>
+<li><strong>关键特性</strong>：<strong>功能极其丰富但架构复杂</strong>，学习曲线陡峭。</li>
+</ul>
+<p><strong>简述：Kubernetes 是容器编排领域的“瑞士军刀”，功能最强大，但复杂度也最高，是大型、复杂应用的首选。</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Docker Compose</th>
+<th>Docker Swarm</th>
+<th>Kubernetes (K8s)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>核心定位</strong></td>
+<td><strong>单机多容器编排</strong></td>
+<td><strong>轻量级集群编排</strong></td>
+<td><strong>企业级容器编排平台</strong></td>
+</tr>
+<tr>
+<td><strong>工作范围</strong></td>
+<td>单台主机</td>
+<td>多台主机（集群）</td>
+<td>大规模、跨域集群</td>
+</tr>
+<tr>
+<td><strong>学习曲线</strong></td>
+<td>平缓（非常容易）</td>
+<td>平缓（Docker用户易上手）</td>
+<td><strong>陡峭</strong>（非常复杂）</td>
+</tr>
+<tr>
+<td><strong>安装部署</strong></td>
+<td>随 Docker Desktop 安装</td>
+<td>Docker 引擎内置，一条命令激活</td>
+<td>复杂，有 kubeadm, kops, 或使用托管服务（EKS, GKE, AKS）</td>
+</tr>
+<tr>
+<td><strong>配置语言</strong></td>
+<td>YAML (<code>docker-compose.yml</code>)</td>
+<td>YAML (兼容 Compose V3+)</td>
+<td>YAML (Manifest 文件，种类繁多)</td>
+</tr>
+<tr>
+<td><strong>高可用性</strong></td>
+<td>不支持（单点故障）</td>
+<td>支持，可配置多个管理节点</td>
+<td><strong>核心设计目标</strong>，支持多Master节点</td>
+</tr>
+<tr>
+<td><strong>自动扩缩容</strong></td>
+<td>不支持</td>
+<td>支持（基于CPU等）</td>
+<td><strong>强力支持</strong>（基于CPU、内存、自定义指标）</td>
+</tr>
+<tr>
+<td><strong>自我修复</strong></td>
+<td>有限（需借助重启策略）</td>
+<td>支持（自动重启失败容器）</td>
+<td><strong>核心功能</strong>（重启、替换、重新调度）</td>
+</tr>
+<tr>
+<td><strong>社区和生态</strong></td>
+<td>强大，但局限于Docker生态</td>
+<td>受Docker支持，但发展放缓</td>
+<td><strong>极其庞大和活跃</strong>，云厂商全面支持，是事实标准</td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td><strong>开发、测试、CI&#x2F;CD</strong></td>
+<td><strong>中小型生产环境</strong>，需要快速上手的团队</td>
+<td><strong>大规模、高要求的生产环境</strong>，微服务架构</td>
+</tr>
+</tbody></table>
+<p><strong>演进关系:</strong></p>
+<ol>
+<li><strong>开发阶段</strong>：使用 <strong>Docker Compose</strong> 在本地完美模拟生产环境。</li>
+<li><strong>初期生产</strong>：可能选择 <strong>Docker Swarm</strong> 快速搭建集群。</li>
+<li><strong>业务增长</strong>：当需求变得复杂，规模扩大后，迁移到 <strong>Kubernetes</strong>。</li>
+</ol>
+<p><strong>总结：从简单到复杂，从单机到集群，Compose -&gt; Swarm -&gt; Kubernetes 是一个自然的技术演进路径。目前，Kubernetes 已成为容器编排领域的事实标准，但对于简单的场景，Swarm 和 Compose 依然是优秀且高效的选择。</strong></p>
+<h2 id="如何选择？"><a href="#如何选择？" class="headerlink" title="如何选择？"></a>如何选择？</h2><p><strong>选择 Docker Compose 如果</strong>：</p>
+<ul>
+<li>进行本地开发，需要快速启动一个包含多个服务的环境。</li>
+<li>应用只需要部署在<strong>单台服务器上</strong>。</li>
+<li>需要编写 CI&#x2F;CD 管道来测试多服务应用。</li>
+</ul>
+<p><strong>选择 Docker Swarm 如果：</strong></p>
+<ul>
+<li>团队已经非常熟悉 Docker，希望用最小的学习成本将应用扩展到集群。</li>
+<li>集群规模<strong>不大</strong>（比如几台到几十台机器）。</li>
+<li>需要一个<strong>简单、内置</strong>的解决方案，不想应对 K8s 的复杂性。</li>
+<li>项目对高可用和自动扩缩容的要求不是极端苛刻。</li>
+</ul>
+<p><strong>选择 Kubernetes 如果：</strong></p>
+<ul>
+<li>应用是<strong>大规模的微服务架构</strong>，需要高度的弹性和可靠性。</li>
+<li>需要部署到<strong>成百上千台机器</strong>上，并可能跨多个数据中心或云平台。</li>
+<li>需要<strong>高级功能</strong>，如基于复杂指标的自动扩缩容、精细的流量管理（如金丝雀发布）、复杂的存储需求等。</li>
+<li>团队有能力和资源来学习和维护 K8s 的复杂性，或者直接使用云托管的 K8s 服务（如 EKS, GKE, AKS）。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://xiangnan321.github.io">South</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://xiangnan321.github.io/2025/09/24/Docker-Compose%E3%80%81Docker-Swarm-%E4%B8%8E-Kubernetes-K8s-%E7%9A%84%E5%8C%BA%E5%88%AB/">https://xiangnan321.github.io/2025/09/24/Docker-Compose%E3%80%81Docker-Swarm-%E4%B8%8E-Kubernetes-K8s-%E7%9A%84%E5%8C%BA%E5%88%AB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://xiangnan321.github.io" target="_blank">Hi</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/avatar.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/13/Kubernetes%E5%AD%A6%E4%B9%A0/" title="Kubernetes学习"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Kubernetes学习</div></div><div class="info-2"><div class="info-item-1">阅读 Kubernetes 官方文档 的整理与总结。 概述Kubernetes 也称为 K8s，是用于自动部署、扩缩和管理容器化应用程序的开源系统。 Kubernetes 是一个可移植、可扩展的开源平台，用于管理容器化的工作负载和服务，方便进行声明式配置和自动化。Kubernetes 拥有一个庞大且快速增长的生态系统，其服务、支持和工具的使用范围广泛。 Kubernetes 这个名字源于希腊语，意为“舵手”或“飞行员”。K8s 这个缩写是因为 K 和 s 之间有 8 个字符的关系。 Google 在 2014 年开源了 Kubernetes 项目。 Kubernetes 建立在 Google 大规模运行生产工作负载十几年经验的基础上， 结合了社区中最优秀的想法和实践。 k8s 作用Kubernetes 提供了一个可弹性运行分布式系统的框架。 Kubernetes 会满足扩展要求、故障转移应用、提供部署模式等。 例如，Kubernetes 可以轻松管理系统的 Canary (金丝雀) 部署。 Kubernetes 提供：  服务发现和负载均衡Kubernetes 可以使用 DNS ...</div></div></div></a><a class="pagination-related" href="/2025/09/02/Docker%E5%AD%A6%E4%B9%A0/" title="Docker学习"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Docker学习</div></div><div class="info-2"><div class="info-item-1">阅读《Docker 从入门到实践》 后的简单整理总结 概述Docker是一个用于开发，交付和运行应用程序的开放平台。Docker能够将应用程序与基础架构分开，从而可以快速交付软件。借助Docker，可以以与管理应用程序相同的方式来管理基础架构。通过利用Docker的快速交付，测试和部署代码的方法，可以显着减少编写代码和在生产环境中运行代码之间的延迟。 Docker 使用Google公司推出的 Go 语言 进行开发实现，基于Linux内核的 cgroup ，namespace ，以及 OverlayFS 类的 Union FS 等技术，对进程进行封装隔离，属于 操作系统层面的虚拟化技术 。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。最初实现是基于 LXC ，从0.7版本以后开始去除LXC，转而使用自行开发的 libcontainer ，从1.11版本开始，则进一步演进为使用 runC 和 containerd 。 Docker架构概述Docker在Linux环境下的架构Docker客户端工具层用于与Docker Engine交互和管理容器化应用。  Docker客...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">South</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-Compose-%E7%BC%96%E6%8E%92%E5%B7%A5%E5%85%B7%EF%BC%88%E5%8D%95%E6%9C%BA%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">Docker Compose - 编排工具（单机）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-Swarm-%E9%9B%86%E7%BE%A4%E7%BC%96%E6%8E%92%E5%B7%A5%E5%85%B7%EF%BC%88%E5%86%85%E7%BD%AE-%E8%BD%BB%E9%87%8F%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">Docker Swarm - 集群编排工具（内置&amp;轻量）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes-K8s-%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92%E5%B9%B3%E5%8F%B0%EF%BC%88%E4%BC%81%E4%B8%9A%E7%BA%A7%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">Kubernetes (K8s) - 容器编排平台（企业级）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">如何选择？</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/13/Kubernetes%E5%AD%A6%E4%B9%A0/" title="Kubernetes学习">Kubernetes学习</a><time datetime="2025-10-13T06:30:41.000Z" title="发表于 2025-10-13 14:30:41">2025-10-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/09/24/Docker-Compose%E3%80%81Docker-Swarm-%E4%B8%8E-Kubernetes-K8s-%E7%9A%84%E5%8C%BA%E5%88%AB/" title="Docker Compose、Docker Swarm 与 Kubernetes (K8s) 的区别">Docker Compose、Docker Swarm 与 Kubernetes (K8s) 的区别</a><time datetime="2025-09-24T07:05:21.000Z" title="发表于 2025-09-24 15:05:21">2025-09-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/09/02/Docker%E5%AD%A6%E4%B9%A0/" title="Docker学习">Docker学习</a><time datetime="2025-09-02T08:18:48.000Z" title="发表于 2025-09-02 16:18:48">2025-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/08/15/js%E6%95%B0%E7%BB%84%E4%B8%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" title="js数组与字符串的方法总结">js数组与字符串的方法总结</a><time datetime="2025-08-15T10:25:58.000Z" title="发表于 2025-08-15 18:25:58">2025-08-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/08/13/go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0/" title="go语言学习">go语言学习</a><time datetime="2025-08-13T03:08:23.000Z" title="发表于 2025-08-13 11:08:23">2025-08-13</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By South</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><div class="js-pjax"></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="true"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
